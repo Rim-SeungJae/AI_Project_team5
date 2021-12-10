@@ -130,7 +130,7 @@ class Darknet(nn.Module):
         out = self.resi5(out)
 
         out = self.avg_pool(out)
-        ut = out.view(-1, 1024)
+        out = out.view(-1, 1024)
         out = self.fc(out)
 
         return out
