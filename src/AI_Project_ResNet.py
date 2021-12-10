@@ -130,7 +130,7 @@ class ResNet(nn.Module):
         block: Type[Union[BasicBlock, Bottleneck]],
         layers: List[int],
         ########################################
-        num_classes: int = 1,
+        num_classes: int,
         ########################################
     ) -> None:
         super(ResNet, self).__init__()

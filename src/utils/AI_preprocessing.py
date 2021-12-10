@@ -32,7 +32,7 @@ def resize_images(image_dir, output_dir, size):
     images = os.listdir(image_dir)
     num_images = len(images)
 
-    for i, image in enumerate(images[:5]):
+    for i, image in enumerate(images):
         with open(os.path.join(image_dir, image), 'r+b') as f:
             with Image.open(f) as img:
                 img = img.resize(size, Image.ANTIALIAS)
@@ -59,7 +59,7 @@ def tokenize(input_dir, output_path):
     names = os.listdir(input_dir)
     explain = dict()
     full_names = dict()
-    for name in names[:5]:
+    for name in names:
         tokens = name.split('.')[0]  # remove file formatter
         tokens = tokens.split('_')
         classes = []

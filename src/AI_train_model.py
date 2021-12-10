@@ -5,8 +5,6 @@
 
 # ## resize
 
-# In[1]:
-
 
 import os
 import numpy as np
@@ -34,7 +32,7 @@ from utils.AI_preprocessing import MarinTrashDS
 if __name__ == '__main__':
     # Select model among ResNet, DarkNet, VGG, DenseNet
     # e.g. model = "ResNet"
-    model = "ResNet"
+    model = "DarkNet"
     assert model in ["ResNet", "DarkNet", "VGG", "DenseNet"]
     
     with open('../data/imgclass_map.json') as f:
@@ -105,7 +103,7 @@ if __name__ == '__main__':
             train_loss += loss.item()
             # _, max_indices = outputs.max(1, keepdim = True)
             predicted = torch.sigmoid(outputs)
-            predicted = outputs > 0.5
+            predicted = predicted > 0.4
             predicted = torch.tensor(predicted,dtype = float, device = device)
             train_correct += predicted.eq(y).all(dim=1).sum().item()
             
@@ -128,7 +126,7 @@ if __name__ == '__main__':
                 valid_loss += loss.item()
                 # _, max_indices = outputs.max(1)
                 predicted = torch.sigmoid(outputs)
-                predicted = outputs > 0.5
+                predicted = predicted > 0.4
                 predicted = torch.tensor(predicted,dtype = float, device = device)
                 valid_correct += predicted.eq(y).all(dim=1).sum().item()
                 
