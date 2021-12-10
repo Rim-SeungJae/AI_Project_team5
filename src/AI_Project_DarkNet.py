@@ -24,9 +24,9 @@ from torchsummary import summary
 class ConvBlock(nn.Module):
     def __init__(self, in_plane, out_plane, droprate):
         super(ConvBlock, self).__init__()
-        self.bn1 = nn.BatchNorm2d(in_plane)
-        self.relu = nn.LeakyReLU(inplace=True)
         self.conv1 = nn.Conv2d(in_plane, out_plane, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(out_plane)
+        self.relu = nn.LeakyReLU(inplace=True)
         self.droprate = droprate
        
 
@@ -50,10 +50,10 @@ class ConvBlock(nn.Module):
 class ResidualBlock(nn.Module):
     def __init__(self, in_plane, droprate):
         super(ResidualBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_plane, in_plane/2, kernel_size=1, stride=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(in_plane/2)
+        self.conv1 = nn.Conv2d(in_plane, in_plane//2, kernel_size=1, stride=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(in_plane//2)
         self.relu = nn.LeakyReLU()
-        self.conv2 = nn.Conv2d(in_plane/2, in_plane, kernel_size = 3, padding=1, bias=False)
+        self.conv2 = nn.Conv2d(in_plane//2, in_plane, kernel_size = 3, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(in_plane)
         self.droprate = droprate
     
@@ -82,7 +82,7 @@ class ResidualBlock(nn.Module):
 
 
 class Darknet(nn.Module):
-    def __init__(self, block = ResidualBlock, num_classes, droprate = 0):
+    def __init__(self, num_classes, block = ResidualBlock, droprate = 0.2):
         super(Darknet, self).__init__()
         self.num_classes = num_classes
         self.droprate = droprate
@@ -130,6 +130,7 @@ class Darknet(nn.Module):
         out = self.resi5(out)
 
         out = self.avg_pool(out)
+        ut = out.view(-1, 1024)
         out = self.fc(out)
 
         return out

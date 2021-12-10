@@ -26,6 +26,8 @@ import math
 from torch.nn import BCEWithLogitsLoss
 from tqdm import tqdm
 import AI_Project_ResNet as resnet
+import AI_Project_DarkNet as darknet
+from utils.AI_preprocessing import Debris, MarinTrashDS
 
 
 # In[2]:
@@ -49,96 +51,6 @@ with open('../data/imgname_map.json') as f:
     full_names = json.load(f)
 
 
-# In[8]:
-
-
-print(explain)
-
-
-# - 클래스를 int로 변경
-# - 변경한 결과를 json 파일로 저장
-# - 추가로 그 클래스가 몇 개인지도 저장
-
-# In[9]:
-
-
-class Debris(object):
-    def __init__(self, debris_file, img_mapped):
-        self.debris_file = debris_file
-        self.img_mapped = img_mapped
-        self.debris2idx = {}
-        self.idx2debris=[]
-        self.idx = 0
-        self.debris_cnt = Counter()
-
-        self.read_file()
-    
-    def read_file(self):
-        if(os.path.exists(self.debris_file)):
-            with open(self.debris_file, 'r') as f:
-                debris = json.load(f)
-                self.debris2idx = debris['debris2idx']
-                self.idx2debris = debris['idx2debris']
-                self.idx = len(self.idx2debris) + 1
-                self.debris_cnt = Counter(debris['debris_cnt'])
-        else:
-            self.build_debris()
-            with open(self.debris_file, 'w', encoding = 'utf-8') as f:
-                json.dump({
-                    'debris2idx': self.debris2idx,
-                    'idx2debris': self.idx2debris,
-                    'debris_cnt': self.debris_cnt
-                }, f)
-    
-    def add_debris(self, debris):
-        if not debris in self.debris2idx:
-            self.debris2idx[debris] = self.idx
-            self.idx2debris.append(debris)
-            self.idx += 1
-
-    def build_debris(self):
-        for _, debris in self.img_mapped.items():
-            for word in debris:
-                self.add_debris(word)
-            self.debris_cnt.update(debris)
-
-    def __call__(self, debris):
-        return self.debris2idx[debris]
-    
-    def __len__(self):
-        return len(self.debris2idx)
-
-
-# In[10]:
-
-
-class MarinTrashDS(Dataset):
-    def __init__(self, explain, full_names, debris_file, trasform=None):
-        self.debris = Debris(debris_file = debris_file, img_mapped=explain)
-        self.transform = transform
-        self.img_index =  [ele for ele in explain]
-        self.num_classes = len(self.debris)
-
-    def __getitem__(self, index):
-        img_id = self.img_index[index]
-        classes = explain[img_id]
-        target = np.zeros(self.num_classes, dtype = float)
-        for word in classes:           
-            int_target = self.debris(word)
-            target[int_target] = 1.0
-
-        path = '../data/' + full_names[img_id]        
-        img = Image.open(path).convert('RGB')
-
-        if self.transform is not None: 
-            img = self.transform(img)
-
-        return img, target
-    
-    def __len__(self):
-        return len(self.img_index)
-
-
 # In[11]:
 
 
@@ -151,7 +63,7 @@ transform = transforms.Compose([
 # In[12]:
 
 
-train_dataset = MarinTrashDS(explain = explain, full_names = full_names, debris_file = '../data/debris.json', trasform = transform)
+train_dataset = MarinTrashDS(explain = explain, full_names = full_names, debris_file = '../data/debris.json', transform = transform)
 
 
 # In[13]:
@@ -184,7 +96,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # In[18]:
 
 
-net = resnet.ResNet(resnet.BasicBlock, [2, 2, 2, 2], num_classes = num_classes).to(device)
+# net = resnet.ResNet(resnet.BasicBlock, [2, 2, 2, 2], num_classes = num_classes).to(device)
+net = darknet.Darknet(num_classes = num_classes).to(device)
 
 criterion = BCEWithLogitsLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)

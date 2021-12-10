@@ -12,7 +12,7 @@ import os
 import numpy as np
 import json
 import torch
-from google.colab import drive
+# from google.colab import drive
 from PIL import Image
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
@@ -23,22 +23,6 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import Counter
 import math
-
-
-# In[ ]:
-
-
-drive.mount('/content/drive')
-FILE_PATH = "/content/drive/MyDrive/Colab Notebooks/해양 침적 쓰레기 이미지/Training"
-
-
-# In[ ]:
-
-
-os.chdir(FILE_PATH)
-
-
-# In[ ]:
 
 
 def resize_images(image_dir, output_dir, size):
@@ -56,15 +40,6 @@ def resize_images(image_dir, output_dir, size):
         if(i + 1) % 10000 == 0:
             print("[{}/{}] Image Resized".format(i + 1, num_images))
 
-
-# In[ ]:
-
-
-img_size = [32, 32]
-resize_images(FILE_PATH, './data', img_size)
-
-
-# In[ ]:
 
 
 def tokenize(input_dir, output_path):
@@ -104,30 +79,6 @@ def tokenize(input_dir, output_path):
 
     return explain, full_names
 
-
-# In[ ]:
-
-
-explain, full_names = tokenize(FILE_PATH, './data/')
-
-
-# In[ ]:
-
-
-print(full_names)
-
-
-# In[ ]:
-
-
-print(explain)
-
-
-# - 클래스를 int로 변경
-# - 변경한 결과를 json 파일로 저장
-# - 추가로 그 클래스가 몇 개인지도 저장
-
-# In[ ]:
 
 
 class Debris(object):
@@ -181,22 +132,24 @@ class Debris(object):
 
 
 class MarinTrashDS(Dataset):
-    def __init__(self, explain, full_names, debris_file, trasform=None):
+    def __init__(self, explain, full_names, debris_file, transform=None):
         self.debris = Debris(debris_file = debris_file, img_mapped=explain)
         self.transform = transform
         self.img_index =  [ele for ele in explain]
         self.num_classes = len(self.debris)
+        self.explain = explain
+        self.full_names = full_names
 
     def __getitem__(self, index):
         img_id = self.img_index[index]
-        classes = explain[img_id]
+        classes = self.explain[img_id]
         target = np.zeros(self.num_classes, dtype = np.float)
         for word in classes:           
             int_target = self.debris(word)
             target[int_target] = 1.0
         target = torch.Tensor(target)
 
-        path = './data/' + full_names[img_id]        
+        path = '../data/' + self.full_names[img_id]        
         img = Image.open(path).convert('RGB')
 
         if self.transform is not None: 
@@ -207,26 +160,4 @@ class MarinTrashDS(Dataset):
     def __len__(self):
         return len(self.img_index)
 
-
-# In[ ]:
-
-
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize(mean = 0.5, std = 0.5)                                
-])
-
-
-# In[ ]:
-
-
-train_dataset = MarinTrashDS(explain = explain, full_names = full_names, debris_file = './data/debris.json', trasform = transform)
-
-
-# In[ ]:
-
-
-tr_index, val_index = train_test_split(list(range(len(train_dataset))), test_size = 0.2, shuffle = True)
-tr_sampler = SubsetRandomSampler(tr_index)
-val_sampler = SubsetRandomSampler(val_index)
 
