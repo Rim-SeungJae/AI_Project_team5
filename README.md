@@ -29,22 +29,18 @@ Darknet(num_classes = num_classes, block = ResidualBlock, droprate)
 
 ## Training
 저희의 프로젝트에서 모델들을 학습시키려면
-Link: [AI_train_model][train_model]
-[train_model]: https://github.com/dongwon18/AI_Project_team5/blob/main/src/AI_train_model.py "Link to AI_train_model"
+[AI_train_model](https://github.com/dongwon18/AI_Project_team5/blob/main/src/AI_train_model.py)
 파일을 실행시키면 됩니다. 해당 파일 내의 model 변수를 수정하는 것으로 어떤 종류의 모델을 학습시킬지 정할 수 있습니다.
 
 ## Testing
 저희의 프로젝트에서 모델들을 테스트하려면
-Link: [AI_test_model][test_model]
-[test_model]: https://github.com/dongwon18/AI_Project_team5/blob/main/src/AI_test_model.py "Link to AI_test_model"
+[AI_test_model](https://github.com/dongwon18/AI_Project_team5/blob/main/src/AI_test_model.py)
 파일을 실행시키면 됩니다. 해당 파일 내의 model 변수를 수정하는 것으로 어떤 종류의 모델을 테스트할지 정할 수 있습니다.
 
 ## Path to data
 학습 및 테스트에 이용된 데이터들은 모두 루트디렉토리의 data폴더에 위치해있습니다.
-Link: [root/data][data]
-[data]: https://github.com/dongwon18/AI_Project_team5/tree/main/data "Link to data"
+[root/data](https://github.com/dongwon18/AI_Project_team5/tree/main/data)
 
 ## Data source
 저희의 데이터는 AI허브의 '해양 침적 쓰레기 이미지' 데이터셋을 다운로드하여 사용하였습니다.
-Link: [해양 침적 쓰레][source]
-[source]: https://aihub.or.kr/aidata/30754 "Link to source"
+[해양 침적 쓰레기](https://aihub.or.kr/aidata/30754)
