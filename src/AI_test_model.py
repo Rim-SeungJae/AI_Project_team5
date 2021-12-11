@@ -29,7 +29,7 @@ import AI_Project_DenseNet as densenet
 from utils.AI_preprocessing import MarinTrashDS
 
 
-model = "DarkNet"
+model = "DenseNet"
 assert model in ["ResNet", "DarkNet", "VGG", "DenseNet"]
 
 with open('../data/imgclass_map.json') as f:
@@ -55,11 +55,13 @@ if model == "ResNet":
     threshold = 0.4
 elif model == "DarkNet":
     loaded = darknet.Darknet(num_classes = num_classes).to(device)
+    threshold = 0.3
 elif model == "VGG":
     loaded = vgg.VGGNet(num_classes = num_classes).to(device)
     threshold = 0.3
 else:
     loaded = densenet.DenseNet(0.2, num_classes=num_classes).to(device)
+    threshold = 0.3
 
 # Load best model
 loaded.load_state_dict(torch.load('../model/' + model + '.pt'))
@@ -77,7 +79,7 @@ with torch.no_grad():
         outputs = loaded(x)
         
         predicted = torch.sigmoid(outputs)
-        predicted = predicted > 0.4
+        predicted = predicted > threshold
         predicted = torch.tensor(predicted,dtype = float, device = device)
         test_correct += predicted.eq(y).all(dim=1).sum().item()
         
@@ -89,4 +91,6 @@ with torch.no_grad():
 test_preds = test_preds.cpu()
 testacc = test_correct/len(test_dataset)
 
+print('')
+print('Testing for '+model)
 print('TestAcc: %.2f' % (testacc))
