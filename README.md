@@ -40,4 +40,4 @@ Darknet(Darknet-53)에서는 3rodml hyperparameter를 사용합니다. num_class
 학습 및 테스트에 이용된 데이터들은 모두 루트디렉토리의 data 폴더에 위치해있습니다.
 
 ## Data source
-저희의 데이터는 AI허브의 [해양 침적 쓰레기](https://aihub.or.kr/aidata/30754) 데이터셋을 다운로드하여 사용하였습니다.
+저희의 데이터는 AI허브의 [해양 침적 쓰레기]([https://aihub.or.kr/aidata/30754](https://aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=236)) 데이터셋을 다운로드하여 사용하였습니다.
